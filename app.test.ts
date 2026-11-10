@@ -14,8 +14,8 @@ describe("Basic test suite", () =>
         const testVerb = "miru";
         const res = await request(app).get(`/verbs?verb=${testVerb}`);
 
-        assert.isNotNull(res.body);
-        assert.isNotEmpty(res.body.verb);
+        assert.isNotNull(res.body, "Res body should not be null");
+        assert.isNotEmpty(res.body.verb, "Res body should not have an empty verb object");
 
         const actual = res.body.verb.verbs[0].verbRomaji;
         assert.equal(actual, testVerb, "Query string should match the romaji");
@@ -36,5 +36,14 @@ describe("Correctness in tenses", () => {
 
         const actual = res.body.verb.verbs[0].tenses.past;
         assert.equal(actual, expected, "Actual should be 見た");
+    })
+
+    test("Verb 見る returns 見ない in negative tense", async () => {
+        const testVerb = "miru";
+        const expected = "見ない";
+        const res = await request(app).get(`/verbs?verb=${testVerb}`);
+
+        const actual = res.body.verb.verbs[0].tenses.negative;
+        assert.equal(actual, expected, "Actual should be 見ない");
     })
 })

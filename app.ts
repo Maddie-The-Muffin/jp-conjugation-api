@@ -4,7 +4,7 @@ import { AllVerbs, containsVerb } from './data.ts';
 const app: Express = express();
 
 app.get("/", (req, res) => {
-    res.json({message: "Good job!!!!"});
+    res.json({message: "Test - Good job!!!!"});
 })
 
 // request a verb, in romaji ("/verbs?verb=miru")
