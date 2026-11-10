@@ -20,7 +20,7 @@ app.get("/verbs", (req, res) => {
     const queryVerb = req.query.verb as string ?? "";
     
     const result = containsVerb(queryVerb);
-    if (result !== null)
+    if (result.error === null)
         res.json({verb: result})
     else
         return res.status(404).json({error: `Verb ${queryVerb} not found`});

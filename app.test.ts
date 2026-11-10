@@ -18,7 +18,7 @@ describe("Basic test suite", () =>
         assert.isNotNull(res.body);
         assert.isNotEmpty(res.body.verb);
 
-        const actual = res.body.verb.verbRomaji;
+        const actual = res.body.verb.verbs[0].verbRomaji;
         assert.equal(actual, testVerb, "Query string should match the romaji");
     })
 
