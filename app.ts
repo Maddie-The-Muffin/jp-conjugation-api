@@ -23,7 +23,7 @@ app.get("/verbs", (req, res) => {
     if (result.error === null)
         res.json({verb: result})
     else
-        return res.status(404).json({error: `Verb ${queryVerb} not found`});
+        return res.status(404).json({error: result.error});
 })
 
 export default app;

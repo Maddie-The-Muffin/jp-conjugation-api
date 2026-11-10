@@ -13,7 +13,6 @@ describe("Basic test suite", () =>
     test("App returns a verb", async () => {
         const testVerb = "miru";
         const res = await request(app).get(`/verbs?verb=${testVerb}`);
-        console.log("res.body");
 
         assert.isNotNull(res.body);
         assert.isNotEmpty(res.body.verb);
@@ -26,5 +25,16 @@ describe("Basic test suite", () =>
         const res = await request(app).get("/verbs?verb=fasdf");
 
         expect(res.status).toBe(404);
+    })
+})
+
+describe("Correctness in tenses", () => {
+    test("Verb 見る returns 見た in past tense", async () => {
+        const testVerb = "miru";
+        const expected = "見た"
+        const res = await request(app).get(`/verbs?verb=${testVerb}`);
+
+        const actual = res.body.verb.verbs[0].tenses.past;
+        assert.equal(actual, expected, "Actual should be 見た");
     })
 })
