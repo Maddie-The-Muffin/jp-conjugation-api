@@ -1,7 +1,11 @@
-const verbType = ["godan", "ichidan", "irregular"] as const;
-export type VerbType = (typeof verbType)[number];
+export type VerbType = "godan" | "ichidan" | "irregular";
 
-export type VerbDefinition = {
+export interface Tenses {
+    past: string,
+    //negative: string,
+}
+
+export interface VerbDefinition {
     verb: string,
     verbHiragana: string,
     verbRomaji: string,
@@ -9,4 +13,8 @@ export type VerbDefinition = {
     type: VerbType
 }
 
-export type VerbSearchResult = VerbDefinition | null;
+export interface VerbResult extends VerbDefinition {
+    tenses: Tenses
+}
+
+export type VerbSearchResult = VerbResult | null;

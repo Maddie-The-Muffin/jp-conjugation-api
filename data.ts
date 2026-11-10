@@ -1,4 +1,5 @@
-import { type VerbSearchResult, type VerbDefinition } from "./format.ts";
+import { type VerbSearchResult, type VerbResult, type VerbDefinition } from "./format.ts";
+import { getTenses } from "./tenses.ts";
 
 export const AllVerbs: VerbDefinition[] = [
     {
@@ -10,14 +11,20 @@ export const AllVerbs: VerbDefinition[] = [
     }
 ]
 
-export const containsVerb = (search: string): VerbSearchResult => {
-    let res: VerbSearchResult = null;
+export const containsVerb = (search: string): VerbResult | null => {
+    let res: VerbResult | null = null;
+    let found: boolean = false;
     AllVerbs.forEach(v => {
-        if (v.verbRomaji === search && res === null) {
+        if (v.verbRomaji === search && !found) {
             console.log("hurrah!");
-            res = v;
+            let temp = v;
+            res = {
+                ...temp,
+                tenses: getTenses(v)
+            }
+            found = true;
         }
-    })
+    });
 
     return res;
 }
