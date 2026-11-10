@@ -11,20 +11,31 @@ export const AllVerbs: VerbDefinition[] = [
     }
 ]
 
-export const containsVerb = (search: string): VerbResult | null => {
-    let res: VerbResult | null = null;
+export const containsVerb = (search: string): VerbSearchResult => {
+    let allVerbs: VerbResult[] = [];
     let found: boolean = false;
     AllVerbs.forEach(v => {
         if (v.verbRomaji === search && !found) {
             console.log("hurrah!");
             let temp = v;
-            res = {
+            allVerbs.push({
                 ...temp,
                 tenses: getTenses(v)
-            }
+            });
             found = true;
         }
     });
 
-    return res;
+    if (found) {
+        return {
+            verbs: allVerbs,
+            error: null
+        }
+    }
+    else {
+        return {
+            verbs: [],
+            error: `Verb ${search} could not be found`
+        }
+    }
 }

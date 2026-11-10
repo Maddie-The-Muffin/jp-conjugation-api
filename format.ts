@@ -17,4 +17,4 @@ export interface VerbResult extends VerbDefinition {
     tenses: Tenses
 }
 
-export type VerbSearchResult = VerbResult | null;
+export type VerbSearchResult = { verbs: VerbResult[], error: string | null }
