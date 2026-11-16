@@ -1,4 +1,4 @@
-import app from "./app.ts";
+import app from "../src/app.ts";
 import { assert, describe, expect, test} from "vitest";
 import request from "supertest"
 
