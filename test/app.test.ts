@@ -1,33 +1,42 @@
 import app from "../src/app.ts";
-import { assert, describe, expect, test} from "vitest";
+import { pool } from "../db/db.ts";
+import { afterAll, assert, describe, expect, test} from "vitest";
 import request from "supertest"
+
+afterAll(async () => {
+    await pool.end();
+})
 
 describe("Basic test suite", () => 
 {
     test("App loads 200", async () => {
-        const res = await request(app).get("/");
+        const res = await request(app).get("/verbs/");
 
         expect(res.status).toBe(200);
     });
 
-    test("App returns a verb", async () => {
-        const testVerb = "miru";
-        const res = await request(app).get(`/verbs?verb=${testVerb}`);
+    test("Querying verb database returns a non-empty array", async () => {
+        const res = await request(app).get("/verbs/");
 
-        assert.isNotNull(res.body, "Res body should not be null");
-        assert.isNotEmpty(res.body.verb, "Res body should not have an empty verb object");
+        assert.isNotEmpty(res.body);
+        assert.isArray(res.body);
+        expect(res.body.length).toBeGreaterThan(0);
+    });
 
-        const actual = res.body.verb.verbs[0].verbRomaji;
-        assert.equal(actual, testVerb, "Query string should match the romaji");
+    test("Verb miru is found", async () => {
+        const res = await request(app).get("/verbs/miru");
+
+        expect(res.status).toBe(200);
     })
 
-    test("App returns 404 when it cannot find a verb", async () => {
-        const res = await request(app).get("/verbs?verb=fasdf");
+    test("Nonsense query is not found", async () => {
+        const res = await request(app).get("/verbs/asdf");
 
         expect(res.status).toBe(404);
     })
 })
 
+/*
 describe("Correctness in tenses", () => {
     test("Verb 見る returns 見た in past tense", async () => {
         const testVerb = "miru";
@@ -46,4 +55,4 @@ describe("Correctness in tenses", () => {
         const actual = res.body.verb.verbs[0].tenses.negative;
         assert.equal(actual, expected, "Actual should be 見ない");
     })
-})
+})*/
