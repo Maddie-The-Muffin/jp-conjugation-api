@@ -29,6 +29,12 @@ describe("Basic test suite", () =>
         expect(res.status).toBe(200);
     })
 
+    test("Verb miru is found when searching by hiragana", async () => {
+        const res = await request(app).get("/verbs/みる?searchMode=verbHiragana");
+
+        expect(res.status).toBe(200);
+    })
+
     test("Nonsense query is not found", async () => {
         const res = await request(app).get("/verbs/asdf");
 

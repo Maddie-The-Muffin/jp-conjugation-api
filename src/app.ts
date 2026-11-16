@@ -2,6 +2,8 @@ import express, { type Express, type Request, type Response } from 'express'
 import { AllVerbs, containsVerb } from './data.ts';
 import { pool } from '../db/db.ts';
 
+type searchColumn = "" | "verb" | "verbHiragana" | "verbRomaji";
+
 const app: Express = express();
 
 app.get("/", (req, res) => {
@@ -31,10 +33,11 @@ app.get("/verbs", async (_req, res, next) => {
 app.get("/verbs/:id", async (req, res, next) => {
     try {
         const queryVerb = req.params.id as string ?? "";
+        const searchMode = req.query.searchMode as searchColumn ?? "verbRomaji";
 
         if (queryVerb === "") return res.status(400).json({error: "Verb query cannot be empty!"});
 
-        const { rows } = await pool.query("SELECT * from verbs WHERE verbRomaji = $1", [queryVerb]);
+        const { rows } = await pool.query(`SELECT * from verbs WHERE ${searchMode} = $1`, [queryVerb]);
         if (rows.length === 0) return res.status(404).json({error: "Requested verb not found"});
 
         res.json(rows);
