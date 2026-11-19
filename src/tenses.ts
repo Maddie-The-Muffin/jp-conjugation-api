@@ -1,5 +1,6 @@
 import { type VerbDefinition, type Tenses, type VerbType, type TenseInfo } from "./format.ts";
-import { hiraganaToRomaji } from "./hiraganaToRomaji.ts";
+import { hiraganaToRomaji } from "../lib/hiraganaToRomaji.ts";
+import { getIchidanConjugation } from "../lib/tenseHelpers.ts";
 
 // exception verbs besides suru and kuru to consider:
 // iku, aru
@@ -51,29 +52,13 @@ function getPastTense(verb: VerbDefinition): TenseInfo {
         }
     }
     else {
-        const end = verb.verb.length - 1;
-        let newVerb: string = verb.verb.slice(0, end);
-        let newVerbHiragana: string = verb.verbHiragana.slice(0, end);
-        newVerb += pastEnding;
-        newVerbHiragana += pastEnding;
-        const newVerbRomaji = hiraganaToRomaji(newVerbHiragana);
-        if (newVerbRomaji.error)
-            console.log("Oh no!");
-        return { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result }
+        return getIchidanConjugation(verb, pastEnding);
     }
 }
 
 function getNegativeTense(verb: VerbDefinition): TenseInfo {
     if (verb.type === "ichidan") {
-        const end = verb.verb.length - 1;
-        let newVerb: string = verb.verb.slice(0, end);
-        let newVerbHiragana: string = verb.verbHiragana.slice(0, end);
-        newVerb += negativeEnding;
-        newVerbHiragana += negativeEnding;
-        const newVerbRomaji = hiraganaToRomaji(newVerbHiragana);
-        if (newVerbRomaji.error)
-            console.log("Oh no!");
-        return { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result }
+        return getIchidanConjugation(verb, negativeEnding);
     }
     else
         return {verb: verb.verb, verbHiragana: verb.verbHiragana, verbRomaji: verb.verbRomaji};
@@ -81,15 +66,7 @@ function getNegativeTense(verb: VerbDefinition): TenseInfo {
 
 function getPastNegativeTense(verb: VerbDefinition): TenseInfo {
     if (verb.type === "ichidan") {
-        const end = verb.verb.length - 1;
-        let newVerb: string = verb.verb.slice(0, end);
-        let newVerbHiragana: string = verb.verbHiragana.slice(0, end);
-        newVerb += pastNegativeEnding;
-        newVerbHiragana += pastNegativeEnding;
-        const newVerbRomaji = hiraganaToRomaji(newVerbHiragana);
-        if (newVerbRomaji.error)
-            console.log("Oh no!");
-        return { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result }
+        return getIchidanConjugation(verb, pastNegativeEnding);
     }
     else
         return {verb: verb.verb, verbHiragana: verb.verbHiragana, verbRomaji: verb.verbRomaji};

@@ -1,5 +1,5 @@
 import { afterAll, assert, assertType, describe, expect, test} from "vitest";
-import { hiraganaToRomaji } from "../src/hiraganaToRomaji.ts";
+import { hiraganaToRomaji } from "../lib/hiraganaToRomaji.ts";
 
 describe("Hiragana to romaji tests", () => {
     test("Simple japanese word", () => {
