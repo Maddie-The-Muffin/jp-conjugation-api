@@ -1,3 +1,5 @@
+import { getTenses } from "./tenses.ts";
+
 export type VerbType = "godan" | "ichidan" | "irregular";
 
 export interface Tenses {
@@ -35,4 +37,11 @@ export function toVerbQueryResult(r: VerbSchema): VerbDefinition {
             definition: r.definition,
             type: r.type
         }
+}
+
+export function toVerbFinalResult(v: VerbDefinition): VerbResult {
+    return {
+        ...v,
+        tenses: getTenses(v)
+    }
 }

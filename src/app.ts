@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from 'express'
 import { pool } from '../db/db.ts';
-import { toVerbQueryResult, type VerbDefinition } from './format.ts';
+import { toVerbFinalResult, toVerbQueryResult, type VerbResult, type VerbDefinition } from './format.ts';
 
 type searchColumn = "" | "verb" | "verbHiragana" | "verbRomaji";
 
@@ -42,7 +42,11 @@ app.get("/verbs/:id", async (req, res, next) => {
 
         const allVerbs: VerbDefinition[] = rows.map(toVerbQueryResult);
 
-        res.json(allVerbs);
+        const allWithTenses: VerbResult[] = allVerbs.map(toVerbFinalResult);
+
+        console.log(allWithTenses);
+
+        res.json(allWithTenses);
     }
     catch (err) {
         next(err);
