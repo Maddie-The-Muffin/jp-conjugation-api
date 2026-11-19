@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.ts",
     "dev": "node src/index.ts",
-    "test": "vitest"
+    "test": "vitest --typecheck",
+    "kanaTest": "vitest hiraganaToRomaji.test.ts"
   },
   "keywords": [],
   "author": "",
