@@ -3,6 +3,21 @@ import { type VerbDefinition, type Tenses, type VerbType } from "./format.ts";
 // exception verbs besides suru and kuru to consider:
 // iku, aru
 
+/*
+tense todo:
+te-form (+ negative te?)
+ba-form (conditional)
+tara-form (conditional)
+tai-form
+masu-kei + its derivatives
+volitional
+passive
+causative
+passive/causative?
+command
+potential
+*/
+
 const pastEnding = "た";
 const negativeEnding = "ない";
 const pastNegativeEnding = "なかった";
