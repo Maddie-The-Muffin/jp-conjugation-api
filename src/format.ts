@@ -5,6 +5,7 @@ export type VerbType = "godan" | "ichidan" | "irregular";
 export interface Tenses {
     past: string,
     negative: string,
+    pastNegative: string,
 }
 
 export interface VerbSchema {

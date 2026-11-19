@@ -76,4 +76,16 @@ describe("Correctness in tenses - Ichidan", () => {
         const actual = body[0].tenses.negative;
         assert.equal(actual, expected, "Actual should be 見ない");
     })
+
+    test("Verb 見る returns 見なかった in past-negative tense", async () => {
+        const testVerb = "miru";
+        const expected = "見なかった";
+        const res = await request(app).get(`/verbs/${testVerb}`);
+
+        assert.isNotEmpty(res.body);
+        const body = res.body as VerbResult[];
+
+        const actual = body[0].tenses.pastNegative;
+        assert.equal(actual, expected, "Actual should be 見なかった");
+    })
 })
