@@ -132,6 +132,8 @@ Considerations:
 -  ん before a vowel or y. ほんや gives honya, and Hepburn writes hon'ya. 
 */
 
+// possible bug fix: try breaking words at fullsize kana boundaries. if a boundary ends with small tsu raise a double flag
+
 // word should be in full hiragana
 export const hiraganaToRomaji = (word: string): { result: string, error: string | null } => {
     if (word.length === 0 || word.length > 100) return {result: "", error: "Word should be between 1 and 100 characters."};
