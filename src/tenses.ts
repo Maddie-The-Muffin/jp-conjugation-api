@@ -1,4 +1,5 @@
-import { type VerbDefinition, type Tenses, type VerbType } from "./format.ts";
+import { type VerbDefinition, type Tenses, type VerbType, type TenseInfo } from "./format.ts";
+import { hiraganaToRomaji } from "./hiraganaToRomaji.ts";
 
 // exception verbs besides suru and kuru to consider:
 // iku, aru
@@ -16,11 +17,15 @@ causative
 passive/causative?
 command
 potential
+zu?
 */
 
 const pastEnding = "た";
 const negativeEnding = "ない";
 const pastNegativeEnding = "なかった";
+
+// todo: add "TenseResult" or someting like that with a field for TenseInfo and one for error
+// so on error we can return 500 or something
 
 export function getTenses(verb: VerbDefinition): Tenses {
     return {
@@ -30,33 +35,62 @@ export function getTenses(verb: VerbDefinition): Tenses {
     }
 }
 
-function getPastTense(verb: VerbDefinition): string {
-    let transformedVerb = verb.verb;
-    if (verb.type === "ichidan") {
-        const end = transformedVerb.length - 1;
-        // todo: finish past tense for ichidan
-        transformedVerb = transformedVerb.slice(0, end);
-        transformedVerb += pastEnding;
+function getPastTense(verb: VerbDefinition): TenseInfo {
+    if (verb.type === "irregular") {
+        if (verb.verb === "する") return {verb: "した", verbHiragana: "した", verbRomaji: "shita"};
+        else if (verb.verb === "来る") return { verb: "来た", verbHiragana: "きた", verbRomaji: "kita" };
+        else {
+            console.log(`Unknown irregular verb ${verb.verbRomaji}`);
+            return {verb: verb.verb, verbHiragana: verb.verbHiragana, verbRomaji: verb.verbRomaji};
+        }
     }
-    return transformedVerb;
+    else if (verb.type === "godan") {
+        if (verb.verb === "行く") return { verb: "行った", verbHiragana: "いった", verbRomaji: "itta"} // handle iku exception
+        else {
+            return {verb: "した", verbHiragana: "した", verbRomaji: "shita"}; // placeholder til we get godan helpers set up
+        }
+    }
+    else {
+        const end = verb.verb.length - 1;
+        let newVerb: string = verb.verb.slice(0, end);
+        let newVerbHiragana: string = verb.verbHiragana.slice(0, end);
+        newVerb += pastEnding;
+        newVerbHiragana += pastEnding;
+        const newVerbRomaji = hiraganaToRomaji(newVerbHiragana);
+        if (newVerbRomaji.error)
+            console.log("Oh no!");
+        return { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result }
+    }
 }
 
-function getNegativeTense(verb: VerbDefinition): string {
-    let transformedVerb = verb.verb;
+function getNegativeTense(verb: VerbDefinition): TenseInfo {
     if (verb.type === "ichidan") {
-        const end = transformedVerb.length - 1;
-        transformedVerb = transformedVerb.slice(0, end);
-        transformedVerb += negativeEnding;
+        const end = verb.verb.length - 1;
+        let newVerb: string = verb.verb.slice(0, end);
+        let newVerbHiragana: string = verb.verbHiragana.slice(0, end);
+        newVerb += negativeEnding;
+        newVerbHiragana += negativeEnding;
+        const newVerbRomaji = hiraganaToRomaji(newVerbHiragana);
+        if (newVerbRomaji.error)
+            console.log("Oh no!");
+        return { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result }
     }
-    return transformedVerb;
+    else
+        return {verb: verb.verb, verbHiragana: verb.verbHiragana, verbRomaji: verb.verbRomaji};
 }
 
-function getPastNegativeTense(verb: VerbDefinition): string {
-    let transformedVerb = verb.verb;
+function getPastNegativeTense(verb: VerbDefinition): TenseInfo {
     if (verb.type === "ichidan") {
-        const end = transformedVerb.length - 1;
-        transformedVerb = transformedVerb.slice(0, end);
-        transformedVerb += pastNegativeEnding;
+        const end = verb.verb.length - 1;
+        let newVerb: string = verb.verb.slice(0, end);
+        let newVerbHiragana: string = verb.verbHiragana.slice(0, end);
+        newVerb += pastNegativeEnding;
+        newVerbHiragana += pastNegativeEnding;
+        const newVerbRomaji = hiraganaToRomaji(newVerbHiragana);
+        if (newVerbRomaji.error)
+            console.log("Oh no!");
+        return { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result }
     }
-    return transformedVerb;
+    else
+        return {verb: verb.verb, verbHiragana: verb.verbHiragana, verbRomaji: verb.verbRomaji};
 }

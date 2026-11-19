@@ -2,10 +2,16 @@ import { getTenses } from "./tenses.ts";
 
 export type VerbType = "godan" | "ichidan" | "irregular";
 
+export interface TenseInfo {
+    verb: string,
+    verbHiragana: string,
+    verbRomaji: string,
+}
+
 export interface Tenses {
-    past: string,
-    negative: string,
-    pastNegative: string,
+    past: TenseInfo,
+    negative: TenseInfo,
+    pastNegative: TenseInfo,
 }
 
 export interface VerbSchema {
