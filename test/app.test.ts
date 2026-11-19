@@ -42,17 +42,19 @@ describe("Basic test suite", () =>
     })
 })
 
-/*
+
 describe("Correctness in tenses", () => {
     test("Verb 見る returns 見た in past tense", async () => {
         const testVerb = "miru";
         const expected = "見た"
         const res = await request(app).get(`/verbs?verb=${testVerb}`);
+        console.log(res.body);
 
-        const actual = res.body.verb.verbs[0].tenses.past;
+        const actual = res.body[0];
         assert.equal(actual, expected, "Actual should be 見た");
     })
 
+    /*
     test("Verb 見る returns 見ない in negative tense", async () => {
         const testVerb = "miru";
         const expected = "見ない";
@@ -60,5 +62,5 @@ describe("Correctness in tenses", () => {
 
         const actual = res.body.verb.verbs[0].tenses.negative;
         assert.equal(actual, expected, "Actual should be 見ない");
-    })
-})*/
+    })*/
+})

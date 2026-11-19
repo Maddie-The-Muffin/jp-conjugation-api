@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from 'express'
-import { AllVerbs, containsVerb } from './data.ts';
 import { pool } from '../db/db.ts';
+import { toVerbQueryResult, type VerbDefinition } from './format.ts';
 
 type searchColumn = "" | "verb" | "verbHiragana" | "verbRomaji";
 
@@ -40,7 +40,9 @@ app.get("/verbs/:id", async (req, res, next) => {
         const { rows } = await pool.query(`SELECT * from verbs WHERE ${searchMode} = $1`, [queryVerb]);
         if (rows.length === 0) return res.status(404).json({error: "Requested verb not found"});
 
-        res.json(rows);
+        const allVerbs: VerbDefinition[] = rows.map(toVerbQueryResult);
+
+        res.json(allVerbs);
     }
     catch (err) {
         next(err);
