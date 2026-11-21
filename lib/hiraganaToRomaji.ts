@@ -1,4 +1,4 @@
-const hiraganaToRomajiTable: Record<string, string> = {
+const kanaTable: Record<string, string> = {
     "あ": "a",
     "い": "i",
     "う": "u",
@@ -70,6 +70,13 @@ const hiraganaToRomajiTable: Record<string, string> = {
     "わ": "wa",
     "を": "wo",
     "ん": "n",
+    "っ": "ltsu", // special handling
+    /*
+    
+    */
+}
+
+const youon: Record<string, string> = {
     "きゃ": "kya",
     "きゅ": "kyu",
     "きょ": "kyo",
@@ -103,26 +110,21 @@ const hiraganaToRomajiTable: Record<string, string> = {
     "りゃ": "rya",
     "りゅ": "ryu",
     "りょ": "ryo",
-    "っ": "ltsu", // empty - special handling
 }
 
 const specialKana: Record<string, string> = {
-    "ゃ": "lya",
-    "ゅ": "lyu",
-    "ょ": "lyo"
+    "ゃ": "ya",
+    "ゅ": "yu",
+    "ょ": "yo"
 }
 
-
+const fullHiraganaToRomajiTable: Record<string, string> = {
+    ...kanaTable,
+    ...youon
+}
 
 /*
 Edge cases to fix:
-  1. Two yōon in a row. きゃきゃ and しゃしゃ return an error ("Unknown kana ゃ"). After a yōon
-     is handled, i jumps ahead and the next kana is looked up without checking for its own
-     small ゃ/ゅ/ょ. Something like きゃくしゃ works only because a plain kana sits between the
-     yōon.
-  2. Small っ before a yōon. ざっしゃ gives zasha, but it should be zassha, and まっちゃ gives
-     macha, not matcha. The double flag is never applied on the yōon branch.
-  3. Hepburn っ + ch. まっち gives macchi. Hepburn writes it matchi (tchi). 
   4. Small っ before a vowel. あっあ gives aaa. That is invalid kana, so it should probably be
      an error. Decide, then test.
   5. Trailing っ after a yōon. きゃっ gives kya. The existing まあっ test covers trailing っ
@@ -132,48 +134,65 @@ Considerations:
 -  ん before a vowel or y. ほんや gives honya, and Hepburn writes hon'ya. 
 */
 
-// possible bug fix: try breaking words at fullsize kana boundaries. if a boundary ends with small tsu raise a double flag
 
 // word should be in full hiragana
-export const hiraganaToRomaji = (word: string): { result: string, error: string | null } => {
-    if (word.length === 0 || word.length > 100) return {result: "", error: "Word should be between 1 and 100 characters."};
-    let finalString = "";
-    let double = false;
-    // first, check for following small tsu or small ya/yu/yo then handle if it exists
-    // else just use the lookup table
-    for(let i = 0; i < word.length; i++) {
-        if (i < word.length - 1) {
-            const hasSpecialKana: string | undefined = specialKana[word[i + 1]];
-            console.log("has special kana? " + hasSpecialKana);
-            if (hasSpecialKana !== undefined) {
-                
-                    let combined = word.substring(i, i + 2);
-                    let res: string | undefined = hiraganaToRomajiTable[combined];
-                    if (res !== undefined) {
-                        finalString += res;
-                    }
-                    else return { result: "", error: `Unknown kana ${combined} submitted` };
-                    i += 2;
+
+const splitByMora = {
+    [Symbol.split](str: string) {
+        const result: string[] = [];
+        // iterate through the passed in word
+        // at each fullsize kana, search forward for the next fullsize kana
+        // if found, add to the results array the initial fullsize kana up to (not including) the next fullsize kana
+        
+        let mora: string = str[0];
+        for (let i = 0; i < str.length - 1; i++) {
+            let checker = i + 1; // todo: handle end of string
+            const check: string | undefined = kanaTable[str[checker]];
+            if (check !== undefined) {
+                result.push(mora);
+                mora = "";
             }
-            if (i >= word.length) break;
-            //else return { result: "", error: `Unknown special kana ${word[i + 1]} submitted` };
+            mora += str[checker];
         }
 
-        let romaji: string | undefined = hiraganaToRomajiTable[word[i]];
-        if (romaji !== undefined) {
-            if (double) {
-                const firstChar = romaji.charAt(0);
-                romaji = firstChar.concat(romaji);
-                double = false;
-            }
-            if (word[i] === "っ") 
-            {
-                double = true;
-            }
-            else
-                finalString += romaji;
-        }
-        else return {result: "", error: `Unknown kana ${word[i]} submitted. (Make sure you are not using katakana!)`}
+        result.push(mora);
+        return result;
     }
-    return {result: finalString, error: null};
+}
+
+export const hiraganaToRomaji = (word: string): { result: string, error: string | null } => {
+    if (word.length === 0 || word.length > 100) {
+        return { result: "", error: "Word must be between 1 and 101 characters." }
+    }
+    const invalidYouonCheck: string | undefined = specialKana[word[0]];
+    if (invalidYouonCheck !== undefined) {
+        return { result: "", error: "Small ya/yu/yo must not begin a word." }
+    }
+
+    const splitWord = word.split(splitByMora);
+
+    let finalWord = "";
+    let double: boolean = false;
+    for(let i = 0; i < splitWord.length; i++) {
+        const mora: string | undefined = fullHiraganaToRomajiTable[splitWord[i]];
+        if (mora === undefined) {
+            return {result: "", error: `Invalid mora ${splitWord[i]} detected`}
+        }
+        else {
+            if (mora === "ltsu") double = true;
+            else {
+                if (double) {
+                    let duplicate = mora.charAt(0) === "c" ? "t" : mora.charAt(0); // follow hepburn rules for small tsu + chi/cha/chu/cho
+                    finalWord += duplicate;
+                    double = false;
+                }
+                finalWord += mora;
+                // todo: add handling for hepburn rule of n + vowel / y
+                // hon'ya, etc
+            }
+        }
+    }
+
+
+    return {result: finalWord, error: null}
 }
