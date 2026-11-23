@@ -1,6 +1,6 @@
 import { type VerbDefinition, type Tenses, type TenseResult } from "./format.ts";
 import { hiraganaToRomaji } from "../lib/hiraganaToRomaji.ts";
-import { getGodanPastTense, getIchidanConjugation } from "../lib/tenseHelpers.ts";
+import { getGodanNegTense, getGodanPastTense, getIchidanConjugation } from "../lib/tenseHelpers.ts";
 
 // exception verbs besides suru and kuru to consider:
 // iku, aru
@@ -65,7 +65,7 @@ function getNegativeTense(verb: VerbDefinition): TenseResult {
     }
     else if (verb.type === "godan") {
         if (verb.verb === "ある") return { tenses: { verb: "ない", verbHiragana: "ない", verbRomaji: "nai"}, error: null } // handle aru exception
-        return {tenses: null, error: "WIP"};
+        return getGodanNegTense(verb);
     }
     else {
         return getIchidanConjugation(verb, negativeEnding);

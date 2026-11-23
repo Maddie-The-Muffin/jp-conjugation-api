@@ -13,6 +13,18 @@ const godanPastTenses: Record<string, string> = {
     "ぬ": "んだ"
 }
 
+const godanNegativeTenses: Record<string, string> = {
+    "う": "わない",
+    "る": "らない",
+    "つ": "たない",
+    "す": "さない",
+    "く": "かない",
+    "ぐ": "がない",
+    "む": "まない",
+    "ぶ": "ばない",
+    "ぬ": "なない"
+}
+
 // intended for basic ichidan conjugations where we chop off the ending and slap a new one onto it
 export const getIchidanConjugation = (verb: VerbDefinition, ending: string): TenseResult => {
         const end = verb.verb.length - 1;
@@ -40,6 +52,35 @@ export const getGodanPastTense = (verb: VerbDefinition): TenseResult => {
     const hiraganaFinalIdx = verb.verbHiragana.length - 1;
     const end = verb.verb[finalIdx]; // get the verb ending
     const newEnding: string | undefined = godanPastTenses[end];
+
+    if (newEnding === undefined)
+        return { tenses: null,  error: `Undefined verb ending ${end}`}
+
+    // Assign the new ending to the verb and its hiragana counterpart, then get its romaji
+    let newVerb: string = verb.verb.slice(0, finalIdx);
+    let newVerbHiragana: string = verb.verbHiragana.slice(0, hiraganaFinalIdx);
+    newVerb += newEnding;
+    newVerbHiragana += newEnding;
+    const newVerbRomaji = hiraganaToRomaji(newVerbHiragana);
+    if (newVerbRomaji.error) {
+        return {
+            tenses: null,
+            error: `There was an error with the romaji function: ${newVerbRomaji.error}`
+        }
+    }
+    else {
+        return {
+            tenses: { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result },
+            error: null
+        }
+    }
+}
+
+export const getGodanNegTense = (verb: VerbDefinition): TenseResult => {
+    const finalIdx = verb.verb.length - 1;
+    const hiraganaFinalIdx = verb.verbHiragana.length - 1;
+    const end = verb.verb[finalIdx]; // get the verb ending
+    const newEnding: string | undefined = godanNegativeTenses[end];
 
     if (newEnding === undefined)
         return { tenses: null,  error: `Undefined verb ending ${end}`}
