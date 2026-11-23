@@ -1,4 +1,4 @@
-import { type VerbDefinition, type Tenses, type TenseInfo, type TenseResult } from "./format.ts";
+import { type VerbDefinition, type Tenses, type TenseResult } from "./format.ts";
 import { hiraganaToRomaji } from "../lib/hiraganaToRomaji.ts";
 import { getGodanPastTense, getIchidanConjugation } from "../lib/tenseHelpers.ts";
 
@@ -47,14 +47,7 @@ function getPastTense(verb: VerbDefinition): TenseResult {
     else if (verb.type === "godan") {
         if (verb.verb === "行く") return { tenses: { verb: "行った", verbHiragana: "いった", verbRomaji: "itta"}, error: null} // handle iku exception
         else {
-            /*
-            u, ru, tsu -> tta
-            gu -> ida
-            ku -> ita
-            mu, bu, nu, -> nda
-            su -> shita
-            */
-            return getGodanPastTense(verb); // placeholder til we get godan helpers set up
+            return getGodanPastTense(verb);
         }
     }
     else {
@@ -63,11 +56,20 @@ function getPastTense(verb: VerbDefinition): TenseResult {
 }
 
 function getNegativeTense(verb: VerbDefinition): TenseResult {
-    if (verb.type === "ichidan") {
-        return getIchidanConjugation(verb, negativeEnding);
+    if (verb.type === "irregular") {
+        if (verb.verb === "する") return {tenses: {verb: "しない", verbHiragana: "しない", verbRomaji: "shinai"}, error: null};
+        else if (verb.verb === "来る") return {tenses: { verb: "来ない", verbHiragana: "こない", verbRomaji: "konai" }, error: null};
+        else {
+            return {tenses: null, error: `Unknown irregular verb ${verb.verbRomaji}`};
+        }
     }
-    else
+    else if (verb.type === "godan") {
+        if (verb.verb === "ある") return { tenses: { verb: "ない", verbHiragana: "ない", verbRomaji: "nai"}, error: null } // handle aru exception
         return {tenses: null, error: "WIP"};
+    }
+    else {
+        return getIchidanConjugation(verb, negativeEnding);
+    } 
 }
 
 function getPastNegativeTense(verb: VerbDefinition): TenseResult {
