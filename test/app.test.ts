@@ -138,7 +138,6 @@ const verbTestChunk = async (verbToTest: TestVerb, tense: tenseNames) => {
         assert.isNotEmpty(res.body); // Result body should not be empty
 
         const body = res.body as VerbResult[];
-        console.log("body?? " + body);
         assert.isDefined(body[0]); // First result of body should not be empty
 
         const tenseResult = body[0].tenses[tense];
@@ -189,7 +188,6 @@ describe("Basic test suite", () =>
         assert.isNotEmpty(res.body);
         assert.isArray(res.body);
         expect(res.body.length).toBeGreaterThan(0);
-        console.log("real length: " + res.body.length);
     });
 
     test("Verb miru is found", async () => {
