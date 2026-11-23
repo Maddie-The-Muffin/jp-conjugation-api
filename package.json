@@ -7,7 +7,8 @@
     "start": "node src/index.ts",
     "dev": "node src/index.ts",
     "test": "vitest --typecheck",
-    "kanaTest": "vitest hiraganaToRomaji.test.ts"
+    "kanaTest": "vitest hiraganaToRomaji.test.ts",
+    "tenseTest": "vitest app.test.ts"
   },
   "keywords": [],
   "author": "",

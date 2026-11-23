@@ -8,10 +8,15 @@ export interface TenseInfo {
     verbRomaji: string,
 }
 
+export interface TenseResult {
+    tenses: TenseInfo | null,
+    error: string | null,
+}
+
 export interface Tenses {
-    past: TenseInfo,
-    negative: TenseInfo,
-    pastNegative: TenseInfo,
+    past: TenseResult,
+    negative: TenseResult,
+    pastNegative: TenseResult,
 }
 
 export interface VerbSchema {

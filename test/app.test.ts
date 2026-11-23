@@ -60,7 +60,11 @@ describe("Correctness in tenses - Ichidan", () => {
         assert.isNotEmpty(res.body);
         const body = res.body as VerbResult[];
 
-        const actual = body[0].tenses.past.verb;
+        const tenseResult = body[0].tenses.past;
+
+        assert.isNull(tenseResult.error);
+        assert.isNotNull(tenseResult.tenses);
+        const actual = tenseResult.tenses.verb;
         assert.equal(actual, expected, "Actual should be 見た");
     })
 
@@ -73,7 +77,11 @@ describe("Correctness in tenses - Ichidan", () => {
         assert.isNotEmpty(res.body);
         const body = res.body as VerbResult[];
 
-        const actual = body[0].tenses.negative.verb;
+        const tenseResult = body[0].tenses.negative;
+
+        assert.isNull(tenseResult.error);
+        assert.isNotNull(tenseResult.tenses);
+        const actual = tenseResult.tenses.verb;
         assert.equal(actual, expected, "Actual should be 見ない");
     })
 
@@ -85,7 +93,11 @@ describe("Correctness in tenses - Ichidan", () => {
         assert.isNotEmpty(res.body);
         const body = res.body as VerbResult[];
 
-        const actual = body[0].tenses.pastNegative.verb;
+        const tenseResult = body[0].tenses.pastNegative;
+
+        assert.isNull(tenseResult.error);
+        assert.isNotNull(tenseResult.tenses);
+        const actual = tenseResult.tenses.verb;
         assert.equal(actual, expected, "Actual should be 見なかった");
     })
 })

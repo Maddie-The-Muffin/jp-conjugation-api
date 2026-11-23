@@ -133,9 +133,6 @@ Edge cases to fix:
      an error. Decide, then test.
   5. Trailing っ after a yōon. きゃっ gives kya. The existing まあっ test covers trailing っ
      after a plain kana only.
-
-Considerations: 
--  ん before a vowel or y. ほんや gives honya, and Hepburn writes hon'ya. 
 */
 
 

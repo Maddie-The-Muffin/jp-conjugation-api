@@ -1,6 +1,6 @@
-import { type VerbDefinition, type Tenses, type VerbType, type TenseInfo } from "./format.ts";
+import { type VerbDefinition, type Tenses, type TenseInfo, type TenseResult } from "./format.ts";
 import { hiraganaToRomaji } from "../lib/hiraganaToRomaji.ts";
-import { getIchidanConjugation } from "../lib/tenseHelpers.ts";
+import { getGodanPastTense, getIchidanConjugation } from "../lib/tenseHelpers.ts";
 
 // exception verbs besides suru and kuru to consider:
 // iku, aru
@@ -36,19 +36,25 @@ export function getTenses(verb: VerbDefinition): Tenses {
     }
 }
 
-function getPastTense(verb: VerbDefinition): TenseInfo {
+function getPastTense(verb: VerbDefinition): TenseResult {
     if (verb.type === "irregular") {
-        if (verb.verb === "する") return {verb: "した", verbHiragana: "した", verbRomaji: "shita"};
-        else if (verb.verb === "来る") return { verb: "来た", verbHiragana: "きた", verbRomaji: "kita" };
+        if (verb.verb === "する") return {tenses: {verb: "した", verbHiragana: "した", verbRomaji: "shita"}, error: null};
+        else if (verb.verb === "来る") return {tenses: { verb: "来た", verbHiragana: "きた", verbRomaji: "kita" }, error: null};
         else {
-            console.log(`Unknown irregular verb ${verb.verbRomaji}`);
-            return {verb: verb.verb, verbHiragana: verb.verbHiragana, verbRomaji: verb.verbRomaji};
+            return {tenses: null, error: `Unknown irregular verb ${verb.verbRomaji}`};
         }
     }
     else if (verb.type === "godan") {
-        if (verb.verb === "行く") return { verb: "行った", verbHiragana: "いった", verbRomaji: "itta"} // handle iku exception
+        if (verb.verb === "行く") return { tenses: { verb: "行った", verbHiragana: "いった", verbRomaji: "itta"}, error: null} // handle iku exception
         else {
-            return {verb: "した", verbHiragana: "した", verbRomaji: "shita"}; // placeholder til we get godan helpers set up
+            /*
+            u, ru, tsu -> tta
+            gu -> ida
+            ku -> ita
+            mu, bu, nu, -> nda
+            su -> shita
+            */
+            return getGodanPastTense(verb); // placeholder til we get godan helpers set up
         }
     }
     else {
@@ -56,18 +62,18 @@ function getPastTense(verb: VerbDefinition): TenseInfo {
     }
 }
 
-function getNegativeTense(verb: VerbDefinition): TenseInfo {
+function getNegativeTense(verb: VerbDefinition): TenseResult {
     if (verb.type === "ichidan") {
         return getIchidanConjugation(verb, negativeEnding);
     }
     else
-        return {verb: verb.verb, verbHiragana: verb.verbHiragana, verbRomaji: verb.verbRomaji};
+        return {tenses: null, error: "WIP"};
 }
 
-function getPastNegativeTense(verb: VerbDefinition): TenseInfo {
+function getPastNegativeTense(verb: VerbDefinition): TenseResult {
     if (verb.type === "ichidan") {
         return getIchidanConjugation(verb, pastNegativeEnding);
     }
     else
-        return {verb: verb.verb, verbHiragana: verb.verbHiragana, verbRomaji: verb.verbRomaji};
+        return {tenses: null, error: "WIP"};
 }
