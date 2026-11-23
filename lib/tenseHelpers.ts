@@ -27,24 +27,23 @@ const godanNegativeTenses: Record<string, string> = {
 
 // intended for basic ichidan conjugations where we chop off the ending and slap a new one onto it
 export const getIchidanConjugation = (verb: VerbDefinition, ending: string): TenseResult => {
-        const end = verb.verb.length - 1;
-        const hiraganaEnd = verb.verbHiragana.length - 1;
-        let newVerb: string = verb.verb.slice(0, end);
-        let newVerbHiragana: string = verb.verbHiragana.slice(0, hiraganaEnd);
-        newVerb += ending;
-        newVerbHiragana += ending;
-        const newVerbRomaji = hiraganaToRomaji(newVerbHiragana);
-        if (newVerbRomaji.error)
-        {
-            return {
-                tenses: null,
-                error: `There was an error with the romaji function: ${newVerbRomaji.error}`
-            }
-        }
+    const end = verb.verb.length - 1;
+    const hiraganaEnd = verb.verbHiragana.length - 1;
+    let newVerb: string = verb.verb.slice(0, end);
+    let newVerbHiragana: string = verb.verbHiragana.slice(0, hiraganaEnd);
+    newVerb += ending;
+    newVerbHiragana += ending;
+    const newVerbRomaji = hiraganaToRomaji(newVerbHiragana);
+    if (newVerbRomaji.error) {
         return {
-            tenses: { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result },
-            error: null
+            tenses: null,
+            error: `There was an error with the romaji function: ${newVerbRomaji.error}`
         }
+    }
+    return {
+        tenses: { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result },
+        error: null
+    }
 }
 
 export const getGodanPastTense = (verb: VerbDefinition): TenseResult => {
@@ -54,7 +53,7 @@ export const getGodanPastTense = (verb: VerbDefinition): TenseResult => {
     const newEnding: string | undefined = godanPastTenses[end];
 
     if (newEnding === undefined)
-        return { tenses: null,  error: `Undefined verb ending ${end}`}
+        return { tenses: null, error: `Undefined verb ending ${end}` }
 
     // Assign the new ending to the verb and its hiragana counterpart, then get its romaji
     let newVerb: string = verb.verb.slice(0, finalIdx);
@@ -83,7 +82,7 @@ export const getGodanNegTense = (verb: VerbDefinition): TenseResult => {
     const newEnding: string | undefined = godanNegativeTenses[end];
 
     if (newEnding === undefined)
-        return { tenses: null,  error: `Undefined verb ending ${end}`}
+        return { tenses: null, error: `Undefined verb ending ${end}` }
 
     // Assign the new ending to the verb and its hiragana counterpart, then get its romaji
     let newVerb: string = verb.verb.slice(0, finalIdx);
@@ -100,6 +99,36 @@ export const getGodanNegTense = (verb: VerbDefinition): TenseResult => {
     else {
         return {
             tenses: { verb: newVerb, verbHiragana: newVerbHiragana, verbRomaji: newVerbRomaji.result },
+            error: null
+        }
+    }
+}
+
+// Because all japanese verbs share the same past-negative ending (ie ない -> なかった) we can just take the result of the negative tense
+// and pass it into here. Hence why the argument is "TenseResult" and not "VerbDefinition" like the others.
+export const getPastNegTense = (verb: TenseResult): TenseResult => {
+    const negativeEnding = "かった"
+    if (verb.tenses === null || verb.error !== null)
+        return verb;
+
+    // slice off the い from the verbs
+    let pastNeg = verb.tenses.verb.slice(0, verb.tenses.verb.length - 1);
+    let pastNegHiragana = verb.tenses.verbHiragana.slice(0, verb.tenses.verbHiragana.length - 1);
+
+    // add the negative ending to the verbs
+    pastNeg += negativeEnding;
+    pastNegHiragana = negativeEnding;
+    const pastNegRomaji = hiraganaToRomaji(pastNegHiragana);
+    if (pastNegRomaji.error) {
+        return {
+            tenses: null,
+            error: `There was an error with the romaji function: ${pastNegRomaji.error}`
+        }
+    }
+    else {
+
+        return {
+            tenses: { verb: pastNeg, verbHiragana: pastNegHiragana, verbRomaji: pastNegRomaji.result },
             error: null
         }
     }

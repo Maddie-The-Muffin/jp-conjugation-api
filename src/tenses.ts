@@ -1,6 +1,5 @@
 import { type VerbDefinition, type Tenses, type TenseResult } from "./format.ts";
-import { hiraganaToRomaji } from "../lib/hiraganaToRomaji.ts";
-import { getGodanNegTense, getGodanPastTense, getIchidanConjugation } from "../lib/tenseHelpers.ts";
+import { getGodanNegTense, getPastNegTense, getGodanPastTense, getIchidanConjugation } from "../lib/tenseHelpers.ts";
 
 // exception verbs besides suru and kuru to consider:
 // iku, aru
@@ -23,10 +22,6 @@ zu?
 
 const pastEnding = "た";
 const negativeEnding = "ない";
-const pastNegativeEnding = "なかった";
-
-// todo: add "TenseResult" or someting like that with a field for TenseInfo and one for error
-// so on error we can return 500 or something
 
 export function getTenses(verb: VerbDefinition): Tenses {
     return {
@@ -73,9 +68,5 @@ function getNegativeTense(verb: VerbDefinition): TenseResult {
 }
 
 function getPastNegativeTense(verb: VerbDefinition): TenseResult {
-    if (verb.type === "ichidan") {
-        return getIchidanConjugation(verb, pastNegativeEnding);
-    }
-    else
-        return {tenses: null, error: "WIP"};
+    return getPastNegTense(getNegativeTense(verb));
 }
