@@ -123,6 +123,10 @@ const fullHiraganaToRomajiTable: Record<string, string> = {
     ...youon
 }
 
+const vowelSounds: string[] = [
+    "a", "i", "u", "e", "o", "ya", "yu", "yo"
+]
+
 /*
 Edge cases to fix:
   4. Small っ before a vowel. あっあ gives aaa. That is invalid kana, so it should probably be
@@ -173,6 +177,7 @@ export const hiraganaToRomaji = (word: string): { result: string, error: string 
 
     let finalWord = "";
     let double: boolean = false;
+    let singleN: boolean = false;
     for(let i = 0; i < splitWord.length; i++) {
         const mora: string | undefined = fullHiraganaToRomajiTable[splitWord[i]];
         if (mora === undefined) {
@@ -181,14 +186,18 @@ export const hiraganaToRomaji = (word: string): { result: string, error: string 
         else {
             if (mora === "ltsu") double = true;
             else {
+                if (singleN) {
+                    if (vowelSounds.includes(mora)) finalWord += "'"; // add an apostrophe between single n + vowel or y
+                    singleN = false; // mark this false no matter the above result - we'll have moved on from the single n so no need to continue being true
+                }
                 if (double) {
                     let duplicate = mora.charAt(0) === "c" ? "t" : mora.charAt(0); // follow hepburn rules for small tsu + chi/cha/chu/cho
                     finalWord += duplicate;
                     double = false;
                 }
+                if (mora === "n")
+                    singleN = true;
                 finalWord += mora;
-                // todo: add handling for hepburn rule of n + vowel / y
-                // hon'ya, etc
             }
         }
     }

@@ -44,6 +44,32 @@ describe("Hiragana to romaji tests", () => {
         assert.equal(res.result, expected, `Result returned ${res}`);
     })
 
+    test("Hepburn apostrophe between single n + vowel sound", () => {
+        const res = hiraganaToRomaji("ほんやく");
+        const expected = "hon'yaku";
+
+        console.log(res.result);
+        expect(res.error).toBeNull();
+        assert.equal(res.result, expected, `Result returned ${res}`);
+    })
+
+    test("No apostrophe between n and consonant", () => {
+        const res = hiraganaToRomaji("あんぱん");
+        const expected = "anpan";
+
+        console.log(res.result);
+        expect(res.error).toBeNull();
+        assert.equal(res.result, expected, `Result returned ${res}`);
+    })
+
+    test("No apostrophe for the na-row of kana", () => {
+        const res = hiraganaToRomaji("なに");
+        const expected = "nani";
+
+        expect(res.error).toBeNull();
+        assert.equal(res.result, expected, `Result returned ${res}`);
+    })
+
     test("Japanese word that ends with small tsu", () => {
         const res = hiraganaToRomaji("まあっ");
         const expected = "maa";
@@ -75,16 +101,16 @@ describe("Hiragana to romaji tests", () => {
     })
 
     test("Two youon in a row", () => {
-        const res = hiraganaToRomaji("きゃきゃ");
-        const expected = "kyakya";
+        const res = hiraganaToRomaji("しゃちょう");
+        const expected = "shachou";
 
         expect(res.error).toBeNull();
         assert.equal(res.result, expected, `Result returned ${res}`);
     })
 
     test("Small tsu before a youon", () => {
-        const res = hiraganaToRomaji("ざっしゃ");
-        const expected = "zassha";
+        const res = hiraganaToRomaji("いっしょ");
+        const expected = "issho";
 
         expect(res.error).toBeNull();
         assert.equal(res.result, expected, `Result returned ${res}`);
