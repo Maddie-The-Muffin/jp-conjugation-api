@@ -44,8 +44,6 @@ app.get("/verbs/:id", async (req, res, next) => {
 
         const allWithTenses: VerbResult[] = allVerbs.map(toVerbFinalResult);
 
-        console.log(allWithTenses);
-
         res.json(allWithTenses);
     }
     catch (err) {
